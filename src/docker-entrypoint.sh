@@ -84,18 +84,11 @@ maybe_enable_jemalloc() {
     fi
 }
 
-use_conda() {
-    . /opt/conda/etc/profile.d/conda.sh
-    conda activate base
-}
-
 maybe_enable_jemalloc
 
 copy_plugins_if_required
 
 prepare_configuration
-
-use_conda
 
 args=("$@")
 if [ "$1" = "help" ]; then
@@ -127,6 +120,14 @@ elif [ "$1" = "taskmanager" ]; then
     echo "Starting Task Manager"
 
     exec "$FLINK_HOME/bin/taskmanager.sh" start-foreground "${args[@]}"
+elif [ "$1" = "jupyterlab" ]; then
+    args=("${args[@]:1}")
+
+    echo "Starting Cluster with Jupyter Lab"
+
+    $FLINK_HOME/bin/start-cluster.sh
+    cd /
+    jupyter lab --ip $HOSTNAME ${args[@]}
 fi
 
 args=("${args[@]}")

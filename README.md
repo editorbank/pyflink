@@ -1,9 +1,7 @@
-# PyFlink-in-Docker
+# PyFlink
 
-Docker base image for Flink Python, using miniconda environment.
 
 ```bash
-docker pull nanmu42/pyflink[:tag]
+docker pull editorbank/pyflink
+docker run -it --rm -p 8081:8081 -p 8888:8888 --name pyflink editorbank/pyflink jupyterlab
 ```
-
-Available tags: https://hub.docker.com/r/nanmu42/pyflink/tags

@@ -1,16 +1,22 @@
-FROM flink:1.13.2
-# copy from https://hub.docker.com/r/continuumio/miniconda3/dockerfile
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py38_4.10.3-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-    rm ~/miniconda.sh && \
-    /opt/conda/bin/conda clean --all -y && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc
+FROM flink:scala_2.12-java11
+
+
 # use bash(with --login) instead of sh to make ~/.bashrc works
 SHELL ["/bin/bash", "--login", "-c"]
-# now conda base env is activated by default
-RUN pip install apache-flink==1.13.2 && \
-    pip cache purge
-COPY docker-entrypoint.sh python.sh /
+
+
+RUN apt update \
+ && apt install -y git \
+ && apt install -y python3-pip python3.10-venv \
+ && ln /usr/bin/python3 /usr/bin/python \
+ && pip install apache-flink jupyterlab \
+ && apt upgrade -y \
+ && apt-get clean \
+ && echo OK
+
+
+COPY src/ /
+USER flink
+
+EXPOSE 8888
 ENTRYPOINT ["/docker-entrypoint.sh"]
